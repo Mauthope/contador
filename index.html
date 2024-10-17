@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador de Cliques</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffffffdd;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .display {
+            font-size: 2.5em;
+            color: #4a90e2;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f3f3f3;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .button {
+            background: #4a90e2;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #357ABD;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                max-width: 90%;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Multiplicador de Cliques</h1>
+        <div class="display" id="display">0</div>
+        <button class="button" id="clickButton">Clique Aqui</button>
+    </div>
+    <script>
+        let count = 0;
+
+        document.getElementById('clickButton').addEventListener('click', () => {
+            count++;
+            const result = count * 25;
+            document.getElementById('display').textContent = result;
+        });
+    </script>
+</body>
+</html>
