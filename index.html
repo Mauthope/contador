@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador de Cliques</title>
+    <title>Contador Personalizado de Cliques</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -41,11 +41,25 @@
             border: 2px solid #ddd;
         }
 
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            box-sizing: border-box;
+        }
+
         .button {
             background: #4a90e2;
             color: #fff;
             border: none;
-            padding: 40px 40px;
+            padding: 20px 40px;
             font-size: 1.5em;
             border-radius: 10px;
             cursor: pointer;
@@ -67,6 +81,10 @@
 <body>
     <div class="container">
         <h1>Multiplicador de Cliques</h1>
+        <div class="input-container">
+            <label for="incrementValue">Digite o valor de incremento:</label>
+            <input type="number" id="incrementValue" placeholder="Ex: 25">
+        </div>
         <div class="display" id="display">0</div>
         <button class="button" id="clickButton">Clique Aqui</button>
     </div>
@@ -74,9 +92,16 @@
         let count = 0;
 
         document.getElementById('clickButton').addEventListener('click', () => {
-            count++;
-            const result = count * 25;
-            document.getElementById('display').textContent = result;
+            const incrementInput = document.getElementById('incrementValue').value;
+            const increment = parseInt(incrementInput) || 0; // Converte para número ou usa 0 se o campo estiver vazio
+            
+            if (increment > 0) {
+                count++;
+                const result = count * increment;
+                document.getElementById('display').textContent = result;
+            } else {
+                alert('Por favor, digite um valor de incremento válido.');
+            }
         });
     </script>
 </body>
