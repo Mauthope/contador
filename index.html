@@ -59,12 +59,13 @@
             background: #4a90e2;
             color: #fff;
             border: none;
-            padding: 100px 40px;
+            padding: 20px 40px;
             font-size: 1.5em;
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.3s ease;
             width: 100%;
+            margin-top: 10px;
         }
 
         .button:hover {
@@ -80,28 +81,53 @@
 </head>
 <body>
     <div class="container">
-        <h1>Contagem de Peças</h1>
+        <h1>Multiplicador de Cliques</h1>
         <div class="input-container">
-            <label for="incrementValue">Digite o valor desejado:</label>
+            <label for="incrementValue">Digite o valor de incremento:</label>
             <input type="number" id="incrementValue" placeholder="Ex: 25">
         </div>
         <div class="display" id="display">0</div>
         <button class="button" id="clickButton">Clique Aqui</button>
+        <button class="button" id="clearButton" style="background: #e74c3c;">Limpar</button>
     </div>
     <script>
-        let count = 0;
+        let count = parseInt(localStorage.getItem('count')) || 0;
+        const incrementInput = document.getElementById('incrementValue');
+        const display = document.getElementById('display');
+
+        // Carregar valor do incremento do localStorage se existir
+        const savedIncrement = parseInt(localStorage.getItem('increment'));
+        if (savedIncrement) {
+            incrementInput.value = savedIncrement;
+        }
+
+        // Atualizar a exibição inicial
+        const updateDisplay = () => {
+            const increment = parseInt(incrementInput.value) || 0;
+            display.textContent = count * increment;
+        };
+
+        updateDisplay();
 
         document.getElementById('clickButton').addEventListener('click', () => {
-            const incrementInput = document.getElementById('incrementValue').value;
-            const increment = parseInt(incrementInput) || 0; // Converte para número ou usa 0 se o campo estiver vazio
-            
+            const increment = parseInt(incrementInput.value);
+
             if (increment > 0) {
                 count++;
-                const result = count * increment;
-                document.getElementById('display').textContent = result;
+                localStorage.setItem('count', count);
+                localStorage.setItem('increment', increment);
+                updateDisplay();
             } else {
-                alert('Por favor, digite um valor válido.');
+                alert('Por favor, digite um valor de incremento válido.');
             }
+        });
+
+        document.getElementById('clearButton').addEventListener('click', () => {
+            count = 0;
+            incrementInput.value = '';
+            localStorage.removeItem('count');
+            localStorage.removeItem('increment');
+            updateDisplay();
         });
     </script>
 </body>
