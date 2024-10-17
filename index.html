@@ -75,7 +75,7 @@
             background: #4a90e2;
             color: #fff;
             border: none;
-            padding: 20px 40px;
+            padding: 100px 40px;
             font-size: 1.5em;
             border-radius: 10px;
             cursor: pointer;
@@ -97,9 +97,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Multiplicador de Cliques</h1>
+        <h1>Contador de Peças</h1>
         <div class="input-container">
-            <label for="incrementValue">Digite o valor de incremento:</label>
+            <label for="incrementValue">Digite o valor:</label>
             <input type="number" id="incrementValue" placeholder="Ex: 25">
             <button class="clear-button" id="clearButton">Limpar</button>
         </div>
@@ -134,7 +134,7 @@
                 localStorage.setItem('increment', increment);
                 updateDisplay();
             } else {
-                alert('Por favor, digite um valor de incremento válido.');
+                alert('Por favor, digite um valor válido.');
             }
         });
 
