@@ -45,7 +45,7 @@
             margin-bottom: 10px;
         }
 
-        input[type="number"] {
+        input {
             width: 100%;
             padding: 10px;
             margin-top: 10px;
@@ -55,7 +55,7 @@
             box-sizing: border-box;
         }
 
-        .clear-button {
+        .clear-button, .download-button {
             background: #e74c3c;
             color: #fff;
             border: none;
@@ -67,8 +67,16 @@
             margin-top: 10px;
         }
 
+        .download-button {
+            background: #2ecc71;
+        }
+
         .clear-button:hover {
             background: #c0392b;
+        }
+
+        .download-button:hover {
+            background: #27ae60;
         }
 
         .button {
@@ -99,9 +107,16 @@
     <div class="container">
         <h1>Contador de Peças</h1>
         <div class="input-container">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" placeholder="Digite o nome">
+            
+            <label for="op">OP:</label>
+            <input type="text" id="op" placeholder="Digite a OP">
+            
             <label for="incrementValue">Digite o valor:</label>
             <input type="number" id="incrementValue" placeholder="Ex: 25">
             <button class="clear-button" id="clearButton">Limpar</button>
+            <button class="download-button" id="downloadButton">Download Excel</button>
         </div>
         <div class="display" id="display">0</div>
         <button class="button" id="clickButton">Clique Aqui</button>
@@ -109,9 +124,13 @@
     <script>
         let count = parseInt(localStorage.getItem('count')) || 0;
         const incrementInput = document.getElementById('incrementValue');
+        const nameInput = document.getElementById('name');
+        const opInput = document.getElementById('op');
         const display = document.getElementById('display');
 
-        // Carregar valor do incremento do localStorage se existir
+        // Carregar valores dos campos do localStorage se existirem
+        nameInput.value = localStorage.getItem('name') || '';
+        opInput.value = localStorage.getItem('op') || '';
         const savedIncrement = parseInt(localStorage.getItem('increment'));
         if (savedIncrement) {
             incrementInput.value = savedIncrement;
@@ -132,6 +151,8 @@
                 count++;
                 localStorage.setItem('count', count);
                 localStorage.setItem('increment', increment);
+                localStorage.setItem('name', nameInput.value);
+                localStorage.setItem('op', opInput.value);
                 updateDisplay();
             } else {
                 alert('Por favor, digite um valor válido.');
@@ -141,9 +162,33 @@
         document.getElementById('clearButton').addEventListener('click', () => {
             count = 0;
             incrementInput.value = '';
-            localStorage.removeItem('count');
-            localStorage.removeItem('increment');
+            nameInput.value = '';
+            opInput.value = '';
+            localStorage.clear();
             updateDisplay();
+        });
+
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            const name = nameInput.value;
+            const op = opInput.value;
+            const increment = incrementInput.value;
+            const total = display.textContent;
+
+            const data = [
+                ['Nome', 'OP', 'Incremento', 'Total'],
+                [name, op, increment, total]
+            ];
+
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + data.map(e => e.join(",")).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "contador_pecas.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
     </script>
 </body>
