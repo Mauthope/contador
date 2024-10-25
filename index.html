@@ -177,10 +177,15 @@
             records.push(newData);
             localStorage.setItem('records', JSON.stringify(records));
 
-            // Limpar os campos do formulário
+            // Limpar os campos do formulário e o contador
             nameInput.value = '';
             opInput.value = '';
             incrementInput.value = '';
+            count = 0;
+            localStorage.setItem('count', count);
+            updateDisplay();
+
+            // Remover informações dos campos do localStorage
             localStorage.removeItem('name');
             localStorage.removeItem('op');
             localStorage.removeItem('increment');
