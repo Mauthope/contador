@@ -115,7 +115,7 @@
             
             <label for="incrementValue">Digite o valor:</label>
             <input type="number" id="incrementValue" placeholder="Ex: 25">
-            <button class="clear-button" id="clearButton">Limpar</button>
+            <button class="clear-button" id="clearButton">Salvar e Limpar</button>
             <button class="download-button" id="downloadButton">Download Excel</button>
         </div>
         <div class="display" id="display">0</div>
@@ -136,7 +136,7 @@
             incrementInput.value = savedIncrement;
         }
 
-        // Atualizar a exibição inicial
+        // Função para atualizar a exibição inicial
         const updateDisplay = () => {
             const increment = parseInt(incrementInput.value) || 0;
             display.textContent = count * increment;
@@ -160,23 +160,37 @@
         });
 
         document.getElementById('clearButton').addEventListener('click', () => {
-            count = 0;
-            incrementInput.value = '';
-            nameInput.value = '';
-            opInput.value = '';
-            localStorage.clear();
-            updateDisplay();
-        });
-
-        document.getElementById('downloadButton').addEventListener('click', () => {
+            // Salvar os dados antes de limpar
             const name = nameInput.value;
             const op = opInput.value;
             const increment = incrementInput.value;
             const total = display.textContent;
 
+            const newData = {
+                name,
+                op,
+                increment,
+                total
+            };
+
+            let records = JSON.parse(localStorage.getItem('records')) || [];
+            records.push(newData);
+            localStorage.setItem('records', JSON.stringify(records));
+
+            // Limpar os campos do formulário
+            nameInput.value = '';
+            opInput.value = '';
+            incrementInput.value = '';
+            localStorage.removeItem('name');
+            localStorage.removeItem('op');
+            localStorage.removeItem('increment');
+        });
+
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            const records = JSON.parse(localStorage.getItem('records')) || [];
             const data = [
                 ['Nome', 'OP', 'Incremento', 'Total'],
-                [name, op, increment, total]
+                ...records.map(record => [record.name, record.op, record.increment, record.total])
             ];
 
             let csvContent = "data:text/csv;charset=utf-8," 
