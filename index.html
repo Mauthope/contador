@@ -1,91 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulação de Rolamento com Motor Central</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f0f0f0;
-    }
-    canvas {
-      background-color: #ffffff;
-      border: 2px solid #333;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador Personalizado de Cliques</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffffffdd;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .display {
+            font-size: 2.5em;
+            color: #4a90e2;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f3f3f3;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .input-container {
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            box-sizing: border-box;
+        }
+
+        .clear-button, .download-button {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .download-button {
+            background: #2ecc71;
+        }
+
+        .clear-button:hover {
+            background: #c0392b;
+        }
+
+        .download-button:hover {
+            background: #27ae60;
+        }
+
+        .button {
+            background: #4a90e2;
+            color: #fff;
+            border: none;
+            padding: 100px 40px;
+            font-size: 3em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background: #357ABD;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                max-width: 90%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <canvas id="canvas" width="600" height="600"></canvas>
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    <div class="container">
+        <h1>Contador de Peças</h1>
+        <div class="input-container">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" placeholder="Digite o nome">
+            
+            <label for="op">OP:</label>
+            <input type="text" id="op" placeholder="Digite a OP">
+            
+            <label for="incrementValue">Digite o valor:</label>
+            <input type="number" id="incrementValue" placeholder="Ex: 25">
+            <button class="clear-button" id="clearButton">Salvar e Limpar</button>
+            <button class="download-button" id="downloadButton">Download Excel</button>
+        </div>
+        <div class="display" id="display">0</div>
+        <button class="button" id="clickButton">Clique Aqui</button>
+    </div>
+    <script>
+        let count = parseInt(localStorage.getItem('count')) || 0;
+        const incrementInput = document.getElementById('incrementValue');
+        const nameInput = document.getElementById('name');
+        const opInput = document.getElementById('op');
+        const display = document.getElementById('display');
 
-    // Parâmetros de controle
-    const originX = canvas.width / 2;
-    const originY = canvas.height / 2;
-    const radius1 = 120; // raio do ponto externo 1
-    const radius2 = 200; // raio do ponto externo 2
-    const motorSpeed = 0.03; // velocidade de rotação do motor central
-    const rollingSpeed = 0.1; // velocidade de rotação dos rolamentos
+        // Carregar valores dos campos do localStorage se existirem
+        nameInput.value = localStorage.getItem('name') || '';
+        opInput.value = localStorage.getItem('op') || '';
+        const savedIncrement = parseInt(localStorage.getItem('increment'));
+        if (savedIncrement) {
+            incrementInput.value = savedIncrement;
+        }
 
-    let motorAngle = 0; // ângulo do motor central
-    let rollingAngle1 = 0; // ângulo do rolamento do ponto 1
-    let rollingAngle2 = Math.PI / 2; // ângulo do rolamento do ponto 2 (inicialmente a 90 graus de deslocamento)
+        // Função para atualizar a exibição inicial
+        const updateDisplay = () => {
+            const increment = parseInt(incrementInput.value) || 0;
+            display.textContent = count * increment;
+        };
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+        updateDisplay();
 
-      // Calcula a posição dos pontos externos
-      const point1X = originX + radius1 * Math.cos(rollingAngle1);
-      const point1Y = originY + radius1 * Math.sin(rollingAngle1);
-      const point2X = originX + radius2 * Math.cos(rollingAngle2);
-      const point2Y = originY + radius2 * Math.sin(rollingAngle2);
+        document.getElementById('clickButton').addEventListener('click', () => {
+            const increment = parseInt(incrementInput.value);
 
-      // Calcula a posição do ponto central "motor"
-      const motorX = originX + 20 * Math.cos(motorAngle);
-      const motorY = originY + 20 * Math.sin(motorAngle);
+            if (increment > 0) {
+                count++;
+                localStorage.setItem('count', count);
+                localStorage.setItem('increment', increment);
+                localStorage.setItem('name', nameInput.value);
+                localStorage.setItem('op', opInput.value);
+                updateDisplay();
+            } else {
+                alert('Por favor, digite um valor válido.');
+            }
+        });
 
-      // Desenha a linha entre o motor e os pontos
-      ctx.beginPath();
-      ctx.moveTo(motorX, motorY);
-      ctx.lineTo(point1X, point1Y);
-      ctx.lineTo(point2X, point2Y);
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+        document.getElementById('clearButton').addEventListener('click', () => {
+            // Salvar os dados antes de limpar
+            const name = nameInput.value;
+            const op = opInput.value;
+            const increment = incrementInput.value;
+            const total = display.textContent;
 
-      // Desenha o ponto central "motor"
-      ctx.beginPath();
-      ctx.arc(motorX, motorY, 10, 0, Math.PI * 2);
-      ctx.fillStyle = '#0077ff';
-      ctx.fill();
+            const newData = {
+                name,
+                op,
+                increment,
+                total
+            };
 
-      // Desenha os pontos externos com rolamento
-      ctx.beginPath();
-      ctx.arc(point1X, point1Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#ff7700';
-      ctx.fill();
+            let records = JSON.parse(localStorage.getItem('records')) || [];
+            records.push(newData);
+            localStorage.setItem('records', JSON.stringify(records));
 
-      ctx.beginPath();
-      ctx.arc(point2X, point2Y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#00cc44';
-      ctx.fill();
+            // Limpar os campos do formulário e o contador
+            nameInput.value = '';
+            opInput.value = '';
+            incrementInput.value = '';
+            count = 0;
+            localStorage.setItem('count', count);
+            updateDisplay();
 
-      // Atualiza os ângulos para criar movimento contínuo
-      motorAngle += motorSpeed; // motor gira ao redor de seu próprio eixo
-      rollingAngle1 += rollingSpeed; // ponto 1 gira em torno do centro
-      rollingAngle2 += rollingSpeed * 0.9; // ponto 2 gira mais devagar, criando entropia
+            // Remover informações dos campos do localStorage
+            localStorage.removeItem('name');
+            localStorage.removeItem('op');
+            localStorage.removeItem('increment');
+        });
 
-      // Continuar animação
-      requestAnimationFrame(draw);
-    }
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            const records = JSON.parse(localStorage.getItem('records')) || [];
+            const data = [
+                ['Nome', 'OP', 'Incremento', 'Total'],
+                ...records.map(record => [record.name, record.op, record.increment, record.total])
+            ];
 
-    draw();
-  </script>
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + data.map(e => e.join(",")).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "contador_pecas.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
 </body>
 </html>
